@@ -1,32 +1,24 @@
-from django.utils.functional import SimpleLazyObject
-from rest_framework.request import Request
-from rest_framework_simplejwt import authentication as jwt_auth
+from django.contrib.auth.models import AnonymousUser
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-def get_user_jwt(request):
-    user = None
-    try:
-        user_jwt = jwt_auth.JWTAuthentication().authenticate(Request(request))
-        if user_jwt is not None:
-            # store the first part from the tuple (user, obj)
-            user = user_jwt[0]
-    except:
-        pass
-
-    return user
-
-
-class JWTAuthenticationMiddleware(object):
+class JWTAuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        # One-time configuration and initialization.
 
     def __call__(self, request):
-        request = self.process_request(request)
+        user = None
+        jwt_auth = JWTAuthentication()
+
+        # Check if Authorization header contains a valid token
+        if 'Authorization' in request.headers:
+            token = jwt_auth.get_raw_token(request.headers['Authorization'])
+            try:
+                validated_token = jwt_auth.get_validated_token(token)
+                user = jwt_auth.get_user(validated_token)
+            except Exception as e:
+                pass  # Token is invalid or expired
+
+        request.user = user or AnonymousUser()
         response = self.get_response(request)
-
         return response
-
-    def process_request(self, request):
-        request.user = SimpleLazyObject(lambda : get_user_jwt(request))
-
