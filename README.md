@@ -28,7 +28,19 @@ The assignment includes the following specifications:
 - Implementing JWT-based authentication using `djangorestframework-simplejwt`.
 - Creating API endpoints for user login and user profile.
 - Developing a custom middleware to handle incoming requests and attach user objects to requests.
-- (Optional) Creating API endpoints for user CRUD operations.
+
+
+
+## Tasks accomplished
+
+- [x] setup django
+- [x] create a user model
+- [x] setup django admin
+- [x] create a dummy account using admin
+- [x] login to dummy account and get JWT
+- [x] Call profile URL to get first name, last name from DB
+- [x] implement JWT middleware
+- [x] return first name, last name from request object in profile url
 
 ## Project Structure
 
